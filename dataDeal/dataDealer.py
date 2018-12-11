@@ -232,10 +232,52 @@ class dataSetDeal(object):
         self.csvClassfiy("./csvDataSet/UCI多分类组合出的二分类数据集/zoo_0_1.csv")
         self.standardization()
         self.getTrainTest()
+
+def standardization(filename):
+        readSet = []
+        fs = open(filename)
+        count = 0
+        for line in fs.readlines():
+            readRow = []
+            count += 1
+            tmp = line.split(' ')
+            for i in tmp:
+                if i == '':
+                    continue
+                else:
+                    readRow.append(float(i.strip()))
+            readSet.append(readRow)
+        fs.close()
+        dataSet = array(readSet)
+        aver = array([0]*30)
+        variance = array([0]*30)
+        for i in range(count):
+            aver = aver + dataSet[i]
+        aver = aver/count
+        print('平均值:',aver)
+        tmpDataSet = zeros((count,30))
+        finalResult = zeros((count,30))
+        for i in range(count):
+            tmpDataSet[i] = (dataSet[i] - aver)**2
+        for i in range(count):
+            variance = variance+tmpDataSet[i]
+        variance = (variance/count)**0.5
+        print('标准差:',variance)
+        for i in range(count):
+            finalResult[i] = (dataSet[i]-aver)/variance
+        print(finalResult)
+        fs2 = open("D_test1.txt",'w')
+        for i in finalResult:
+            for j in i[:-1]:
+                fs2.write(str(j)+' ')
+            fs2.write(str(i[-1]))
+            fs2.write('\n')
+        fs2.close()
 if __name__ == "__main__":
     #csvClassfiy("./csvDataSet/UCI多分类组合出的二分类数据集/letter_0_2.csv")
     #classfiy("credit6000_126.txt")
     #standardization()
     #getTrainTest()
-    myData = dataSetDeal("zoo_0_1")
-    myData.run()
+    #myData = dataSetDeal("zoo_0_1")
+    #myData.run()
+    standardization("D_test.txt")
